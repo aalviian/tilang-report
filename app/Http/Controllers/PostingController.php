@@ -143,7 +143,7 @@ class PostingController extends Controller
     }
 
     public function deletePhoto($filename){
-        $path = public_path() . DIRECTORY_SEPARATOR . $filename;
+        $path = public_path() . DIRECTORY_SEPARATOR . 'img/'.$filename;
         return File::delete($path);
     }
 

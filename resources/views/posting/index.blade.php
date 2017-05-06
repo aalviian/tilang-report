@@ -30,7 +30,7 @@
                         </tr> 
                     </thead>
                     <tbody>
-                        @foreach( $postings as $posting)
+                        @forelse( $postings as $posting)
                         <tr>
                             <td>{{ $posting -> pelanggaran }} </td>
                             <td>{{ $posting -> jenis_kendaraan }}</td>
@@ -46,8 +46,15 @@
                                 {!! Form::submit('delete', ['class'=>'btn btn-xs btn-danger js-submit-confirm']) !!}
                                 {!! Form::close() !!}
                             </td>
+                            @empty
+                            <td colspan="7">
+                                <center>
+                                    <h2>:(</h2>
+                                    <p><h4>Ops, pencarian tidak ditemukan</h4></p>
+                                </center>
+                            </td>
+                            @endforelse
                         </tr>
-                        @endforeach
                     </body>
                 </table>
                 {{ $postings->links() }}
