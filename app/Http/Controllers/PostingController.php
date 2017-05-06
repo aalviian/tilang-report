@@ -109,8 +109,44 @@ class PostingController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $olddata = \App\Posting::find($id);
+        $posting = \App\Posting::findOrFail($id);
+
+        $rules = [
+            'pelanggaran' => 'required',
+            'jenis_kendaraan' => 'required',
+            'plat_nomor' => 'required',
+            'lastImage' => 'mimes:jpeg,jpg,bmp,png|max:10240',
+        ];
+
+        $messages = [
+            'required' => 'Field harus di isi alias tidak boleh kosong',
+            'max' => 'Ukuran photo maksimal 10 MB ',
+            'mimes' => 'Photo harus berekstensi JPG, JPEG, BMP, atau PNG'
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return redirect() -> route('postings.create')->withErrors($validator)->withInput();
+        }
+
+        $data = $request->only('pelanggaran','jenis_kendaraan', 'plat_nomor');
+
+        if ($request->hasFile('lastImage')){
+            $data['lastImage'] = $this->savePhoto($request->file('lastImage'));
+            if($posting->lastImage !== '') $this->deletePhoto($posting->lastImage);
+        }
+
+        $posting->update($data);
+        Session::flash('flash_notification', ["level"=>"success", "message"=>"Berhasil mengubah pelanggaran kedalam database"]);
+        return redirect()->route('postings.index');
     }
+
+    public function deletePhoto($filename){
+        $path = public_path() . DIRECTORY_SEPARATOR . $filename;
+        return File::delete($path);
+    }
+
 
     /**
      * Remove the specified resource from storage.
@@ -120,6 +156,10 @@ class PostingController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $posting = \App\Posting::find($id);
+        if($posting->lastImage !== '') $this->deletePhoto($posting->lastImage);
+        $posting->delete();
+        Session::flash('flash_notification', ["level"=>"success", "message"=>"Berhasil meenghapus pelanggaran dari database"]);
+        return redirect()->route('postings.index');
     }
 }
