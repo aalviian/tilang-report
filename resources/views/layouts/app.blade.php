@@ -60,7 +60,7 @@
                             </ul>
                         </li>
                         @endif
-                        <li><a href="{{ url('/trash') }}">Trash</a></li>
+                        <li><a href="{{ url('/trash') }}">Trash ({{ App\Posting::withTrashed()->whereNotNull('deleted_at')->count() > 0 ? App\Posting::withTrashed()->whereNotNull('deleted_at')->count() : 0 }})</a></li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
