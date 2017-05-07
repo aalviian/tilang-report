@@ -55,7 +55,7 @@
                                 Manage <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu" role="menu">
-                                <li><a href="{{ route('postings.index') }}"><i class="fa fa-btn fa-tags"></i>Daftar Pelanggaran</a></li>
+                                <li><a href="{{ route('postings.index') }}"><i class="fa fa-btn fa-tags"></i> Daftar Pelanggaran ({{ App\Posting::count() > 0 ? App\Posting::count() : 0 }})</a></li>
                                 
                             </ul>
                         </li>
