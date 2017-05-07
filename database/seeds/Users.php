@@ -11,6 +11,11 @@ class Users extends Seeder
      */
     public function run()
     {
-        //
+        $user = new App\User;
+        $user->name = "Guntur";
+        $user->email = "guntur@gmail.com";
+        $user->password = bcrypt("secret");
+        $user->save();
+        $this->command->info("Berhasil menambahkan akun Guntur ke database User");
     }
 }

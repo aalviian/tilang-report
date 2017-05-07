@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Validator;
 use Session;
 use File;
+use DB;
 
 class PostingController extends Controller
 {
@@ -20,6 +21,11 @@ class PostingController extends Controller
         $query = $request->get('query');
         $postings = \App\Posting::where('plat_nomor', 'LIKE', '%'.$query.'%') -> orWhere('pelanggaran', 'LIKE', '%'.$query.'%') -> orderBy('id') -> paginate(5);
         return view('posting.index', compact('postings'));
+    }
+
+    public function getTrash(){
+        $postings = \App\Posting::withTrashed()->whereNotNull('deleted_at')->get();
+        return view('posting.trash', compact('postings'));
     }
 
     /**
@@ -157,9 +163,29 @@ class PostingController extends Controller
     public function destroy($id)
     {
         $posting = \App\Posting::find($id);
-        if($posting->lastImage !== '') $this->deletePhoto($posting->lastImage);
         $posting->delete();
         Session::flash('flash_notification', ["level"=>"success", "message"=>"Berhasil meenghapus pelanggaran dari database"]);
         return redirect()->route('postings.index');
+    }
+
+    public function forceDelete($id)
+    {
+        $posting = \App\Posting::withTrashed()->find($id);
+        if($posting->lastImage !== '') $this->deletePhoto($posting->lastImage);
+        $posting->forceDelete();
+        Session::flash('flash_notification', ["level"=>"success", "message"=>"Berhasil meenghapus permanan pelanggaran dari database"]);
+        return redirect()->route('postings.index');
+    }
+
+    public function getRestore($id)
+    {
+        $posting = \App\Posting::withTrashed()->find($id);
+        $posting->restore();
+        Session::flash('flash_notification', ["level"=>"success", "message"=>"Berhasil mengembalikan daftar pelanggaran dari database"]);
+        return redirect()->route('postings.index');
+    }
+
+    public function getid(Request $request){
+        return $request->all();
     }
 }

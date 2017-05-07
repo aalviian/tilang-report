@@ -20,6 +20,7 @@ class CreatePostingsTable extends Migration
             $table->string('pelanggaran');
             $table->string('lastImage');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
